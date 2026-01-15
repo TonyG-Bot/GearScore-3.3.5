@@ -212,8 +212,8 @@
 		<Size x="169" y="350"/>
 		<Scripts>
 			<OnLoad>
-				<![CDATA[
-				local id = #PAPERDOLL_STATCATEGORY_DEFAULTORDER + 1;
+
+<!-- 				local id = #PAPERDOLL_STATCATEGORY_DEFAULTORDER + 1;
 				local frame = CreateFrame("Frame", "CharacterStatsPaneCategory"..id, CharacterStatsPaneScrollChild, "StatGroupTemplate");
 				STAT_CATEGORY_GEARSCORE = "GearScore";
 				PAPERDOLL_STATCATEGORIES["GEARSCORE"] = {["id"] = id,stats = {"GS_GEARSCORE"}};
@@ -238,8 +238,8 @@
 					statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, "Raw GearScore:").." "..statValue..FONT_COLOR_CODE_CLOSE;
 					statFrame.tooltip2 = 'This is your raw GearScore before spec & gem calculations. This value reflects your GS if fully gemed, enchanted, and wearing appropriate stats.';
 					statFrame:Show();
-				end
-				]]>
+				end -->
+
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -1318,6 +1318,34 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>		
+			<CheckButton name="GS_EnableCommunication" inherits="UICheckButtonTemplate" text="CheckButton12">
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(GS_EnableCommunication, "ANCHOR_Right")
+						GameTooltip:ClearLines(); 
+						GameTooltip:AddLine("Enables the communication",1,1,1); 
+						GameTooltip:AddLine("Enables the automatic"); 
+						GameTooltip:AddLine("transmission of database.");
+						GameTooltip:AddLine("Recommended off to");
+						GameTooltip:AddLine("not blow up the database");
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+					<OnLoad>
+						
+					</OnLoad>												
+				</Scripts>			
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="61" y="-180" />
+					</Anchor>
+				</Anchors>
+			</CheckButton>		
 
 
 		<Slider name="GS_DatabaseAgeSlider" inherits="OptionsSliderTemplate">
@@ -1492,6 +1520,16 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="334" y="-129" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="GS_FontString11" inherits="GameFontNormal" text="Enable communication" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="179" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="93" y="-180" />
 						</Anchor>
 					</Anchors>
 				</FontString>

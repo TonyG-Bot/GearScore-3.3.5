@@ -568,13 +568,9 @@ function GearScore_HookSetUnit(arg1, arg2)
 	if ( GS_PlayerIsInCombat ) then
 		return
 	end
-
-	if not UnitIsPlayer("mouseover") then return end;
+	
     if UnitName("mouseover") == "UNKNOWN" then return end;
-
-	if ( InspectFrame and InspectFrame:IsShown() ) or ( Examiner and Examiner:IsShown() ) then
-		return
-	end
+	
 
 	GS_GearScore = nil; 
 	local Name = GameTooltip:GetUnit(); 
@@ -591,6 +587,9 @@ function GearScore_HookSetUnit(arg1, arg2)
 		end; 
 	end
 	if ( CanInspect("mouseover") ) and ( UnitName("mouseover") == Name ) then 
+		if ( InspectFrame and InspectFrame:IsShown() ) or ( Examiner and Examiner:IsShown() ) then
+			return
+		end
 		Age = "";
 		local mouseoverGuild, _,_ = GetGuildInfo("mouseover")
 		local playerGuild, _,_ = GetGuildInfo("player")
@@ -625,7 +624,6 @@ function GearScore_HookSetUnit(arg1, arg2)
 	end
  	if (( GS_Data[GetRealmName()].Players[Name] ) and ( GS_Data[GetRealmName()].Players[Name].GearScore > 0 ) and ( GS_Settings["Player"] == 1 )) or ( mouseoverGearScore and ( GS_Settings["Player"] == 1 )) then 
 		local Red, Blue, Green
-
 		if not mouseoverGearScore then
 			Red, Blue, Green = GearScore_GetQuality(GS_Data[GetRealmName()].Players[Name].GearScore)
 		else
@@ -1047,6 +1045,9 @@ function GearScore_ShowOptions()
 	if ( GS_Settings["KeepFaction"] == 1 ) then GS_FactionCheck:SetChecked(true); else GS_FactionCheck:SetChecked(false); end
 	if ( GS_Settings["ML"] == 1 ) then GS_MasterlootCheck:SetChecked(true); else GS_MasterlootCheck:SetChecked(false); end
 	if ( GS_Settings["CHAT"] == 1 ) then GS_ChatCheck:SetChecked(true); else GS_ChatCheck:SetChecked(false); end
+
+	if ( GS_Settings["Communication"] == 1 ) then GS_EnableCommunication:SetChecked(true); else GS_EnableCommunication:SetChecked(false); end
+
 	GS_DatabaseAgeSliderText:SetText("Keep data for: "..(GS_Settings["DatabaseAgeSlider"] or 30).." days.")
 	GS_DatabaseAgeSlider:SetValue(GS_Settings["DatabaseAgeSlider"] or 30)
 	GS_LevelEditBox:SetText(GS_Settings["MinLevel"])
@@ -1071,6 +1072,9 @@ function GearScore_HideOptions()
 	if ( GS_PruneCheck:GetChecked() ) then GS_Settings["AutoPrune"] = 1; else GS_Settings["AutoPrune"] = -1; end		
 	if ( GS_FactionCheck:GetChecked() ) then GS_Settings["KeepFaction"] = 1; else GS_Settings["KeepFaction"] = -1; end
 	if ( GS_MasterlootCheck:GetChecked() ) then GS_Settings["ML"] = 1; else GS_Settings["ML"] = -1; end
+
+	if ( GS_EnableCommunication:GetChecked() ) then GS_Settings["Communication"] = 1; else GS_Settings["Communication"] = -1; end
+
 	GS_Settings["MinLevel"] = tonumber(GS_LevelEditBox:GetText());
 	GS_Settings["DatabaseAgeSlider"] = ( GS_DatabaseAgeSlider:GetValue() or 30 )
 	GS_OptionsFrame:Hide()		
