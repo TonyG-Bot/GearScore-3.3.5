@@ -1393,6 +1393,7 @@ function GearScore_TextureOnEnter()
 end
 
 function GearScore_DatabaseOnClick(Event, Cell, Misc, Button)
+	if not Cell then return end
 	--LibQTip:Release(GearScoreTooltip)
 	if ( Button == "RightButton" ) and ( Cell["_line"] > 2 ) and ( Cell["_column"] == 3 ) and ( GSX_DataBase[Cell["_line"]-2+GS_StartPage] )	then ChatFrameEditBox:Show(); ChatFrameEditBox:Insert("/t "..GSX_DataBase[Cell["_line"]-2+GS_StartPage].Name.." "); return; end
 

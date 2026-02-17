@@ -1,5 +1,5 @@
 local MAJOR = "LibQTipClick-1.1"
-local MINOR =  3
+local MINOR =  4
 assert(LibStub, MAJOR.." requires LibStub")
 
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
@@ -31,6 +31,7 @@ cell_highlight:SetBlendMode("ADD")
 cell_highlight:SetAllPoints(highlighter)
 
 function lib.OnEnter(event, cell, arg)
+	if not cell then return end
 	highlighter:SetAllPoints(cell)
 	highlighter:SetFrameLevel(cell:GetFrameLevel())
 	highlighter:Show()
@@ -41,13 +42,13 @@ function lib.OnLeave(event, cell, arg)
 	highlighter:Hide()
 end
 
-function lib.OnMouseDown(event, cell, arg, button) PlaySound("igMainMenuOpen") end
+function lib.OnMouseDown(event, cell, arg, button) if not cell then return end; PlaySound("igMainMenuOpen") end
 function lib.OnMouseUp(event, cell, arg, button)  end
 
-local function Cell_OnEnter(cell) cell.callbacks:Fire("OnEnter", cell, cell.arg) end
-local function Cell_OnLeave(cell) cell.callbacks:Fire("OnLeave", cell, cell.arg) end
-local function Cell_OnMouseDown(cell, button) cell.callbacks:Fire("OnMouseDown", cell, cell.arg, button) end
-local function Cell_OnMouseUp(cell, button) cell.callbacks:Fire("OnMouseUp", cell, cell.arg, button) end
+local function Cell_OnEnter(cell) if cell and cell.callbacks then cell.callbacks:Fire("OnEnter", cell, cell.arg) end end
+local function Cell_OnLeave(cell) if cell and cell.callbacks then cell.callbacks:Fire("OnLeave", cell, cell.arg) end end
+local function Cell_OnMouseDown(cell, button) if cell and cell.callbacks then cell.callbacks:Fire("OnMouseDown", cell, cell.arg, button) end end
+local function Cell_OnMouseUp(cell, button) if cell and cell.callbacks then cell.callbacks:Fire("OnMouseUp", cell, cell.arg, button) end end
 
 function cell_prototype:InitializeCell() cell_base.InitializeCell(self) end
 
