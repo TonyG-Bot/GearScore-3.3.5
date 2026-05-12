@@ -33,6 +33,26 @@ function GearScore_ThrottleUpdate(self, elapsed)
 end
 
 function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_Whisper, GS_Sender)
+	if ( GS_EventName == "PLAYER_GUILD_UPDATE" ) then
+		if not GS_Settings["KnownGuilds"] then GS_Settings["KnownGuilds"] = {} end
+		local guild = GetGuildInfo("player")
+		if guild and guild ~= "" then GS_Settings["KnownGuilds"][guild] = true end
+		return
+	end
+
+	if ( GS_EventName == "GUILD_ROSTER_UPDATE" ) then
+		-- Guild info is now available. Record current guild into KnownGuilds,
+		-- then unregister so this doesn't fire repeatedly during the session.
+		GearScore:UnregisterEvent("GUILD_ROSTER_UPDATE")
+		if not GS_Settings["KnownGuilds"] then GS_Settings["KnownGuilds"] = {} end
+		local guild = GetGuildInfo("player")
+		if guild and guild ~= "" then
+			GS_Settings["KnownGuilds"][guild] = true
+			if ( GS_Settings["Developer"] ~= 1 ) then SendAddonMessage( "GSY_Version", GS_Settings["OldVer"], "GUILD"); end
+		end
+		return
+	end
+
 	if ( GS_EventName == "PLAYER_REGEN_ENABLED" ) then GS_PlayerIsInCombat = false; return; end
 	if ( GS_EventName == "PLAYER_REGEN_DISABLED" ) then GS_PlayerIsInCombat = true; return; end
 	if ( GS_EventName == "EQUIPMENT_SWAP_PENDING" ) then GS_PlayerIsSwitchingGear = true; GS_PlayerSwappedGear = 0 return; end
@@ -126,8 +146,11 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
 					if TestAuthenticity then return end
 					if ( UnitName("mouseover") == tbl[1] ) then GameTooltip:SetUnit(tbl[1]); end
 					if ( GS_DisplayPlayer == tbl[1] ) and ( GS_DisplayFrame:IsVisible() ) then GearScore_DisplayUnit(tbl[1], 1); end
-					if ( ( GS_Factions[GS_Data[GetRealmName()].Players[tbl[1]].Faction] ~= UnitFactionGroup("player") ) and ( GS_Settings["KeepFaction"] == -1 ) ) or ( ( GS_Data[GetRealmName()].Players[tbl[1]].Level < GS_Settings["MinLevel"] ) and ( tbl[1] ~= UnitName("player") ) ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
-					if ( (type(tonumber(tbl[10]))) == "number" ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+					local _isProtected = GearScore_IsKnownChar(tbl[1]) or GearScore_IsKnownGuild(GS_Data[GetRealmName()].Players[tbl[1]].Guild) or GearScore_IsGuildMember(tbl[1]) or GearScore_IsFriend(tbl[1])
+					if not _isProtected then
+						if ( ( GS_Factions[GS_Data[GetRealmName()].Players[tbl[1]].Faction] ~= UnitFactionGroup("player") ) and ( GS_Settings["KeepFaction"] == -1 ) ) or ( ( GS_Data[GetRealmName()].Players[tbl[1]].Level < GS_Settings["MinLevel"] ) ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+						if ( (type(tonumber(tbl[10]))) == "number" ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+					end
 					return
 				end
 
@@ -141,8 +164,11 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
 					if TestAuthenticity then return end
 					local CurrentRecord = GS_Data[GetRealmName()].Players[tbl[1]]
 					if ( GS_DisplayPlayer == tbl[1] ) and ( GS_DisplayFrame:IsVisible() ) then GearScore_DisplayUnit(tbl[1], 1); end
-                    if ( ( GS_Factions[GS_Data[GetRealmName()].Players[tbl[1]].Faction] ~= UnitFactionGroup("player") ) and ( GS_Settings["KeepFaction"] == -1 ) ) or ( ( GS_Data[GetRealmName()].Players[tbl[1]].Level < GS_Settings["MinLevel"] ) and ( tbl[1] ~= UnitName("player") ) ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
-					if ( (type(tonumber(tbl[10]))) == "number" ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+					local _isProtected2 = GearScore_IsKnownChar(tbl[1]) or GearScore_IsKnownGuild(GS_Data[GetRealmName()].Players[tbl[1]].Guild) or GearScore_IsGuildMember(tbl[1]) or GearScore_IsFriend(tbl[1])
+					if not _isProtected2 then
+						if ( ( GS_Factions[GS_Data[GetRealmName()].Players[tbl[1]].Faction] ~= UnitFactionGroup("player") ) and ( GS_Settings["KeepFaction"] == -1 ) ) or ( ( GS_Data[GetRealmName()].Players[tbl[1]].Level < GS_Settings["MinLevel"] ) ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+						if ( (type(tonumber(tbl[10]))) == "number" ) then GS_Data[GetRealmName()].Players[tbl[1]] = nil; end
+					end
 					return
 				end
 			end
@@ -157,15 +183,19 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
 			if not ( GS_Data ) then GS_Data = {}; end; if not ( GS_Data[GetRealmName()] ) then GS_Data[GetRealmName()] = { ["Players"] = {} }; end
   			GS_Settings["Developer"] = 0; GS_VersionNum = 30119; GS_Settings["OldVer"] = GS_VersionNum
   			for i, v in pairs(GS_DefaultSettings) do if not ( GS_Settings[i] ) then GS_Settings[i] = GS_DefaultSettings[i]; end; end
-  			if ( GS_Settings["AutoPrune"] == 1 ) then GearScore_Prune(); end
-			if ( GS_Settings["Developer"] == 0 ) then print("Welcome to GearScore 3.1.21. Type /gs to visit options and turn off help."); end
+  			if ( GS_Settings["Developer"] == 0 ) then print("Welcome to GearScore 3.1.21. Type /gs to visit options and turn off help."); end
 			if ( GS_Settings["Developer"] == 1 ) then print("Welcome to GearScore 3.1.21. This is a test version. Please provide feedback at www.GearScoreAddon.com"); end
   			if ( GS_Settings["Restrict"] == 1 ) then GearScore_SetNone(); end
   			if ( GS_Settings["Restrict"] == 2 ) then GearScore_SetLight(); end
   			if ( GS_Settings["Restrict"] == 3 ) then GearScore_SetHeavy(); end
-  			if ( GetGuildInfo("player") ) then GuildRoster(); end
+			-- Register this character now; UnitName("player") is reliable at ADDON_LOADED.
+			GearScore_RegisterCurrentChar()
+			-- Always request the roster; GUILD_ROSTER_UPDATE will fire once it responds
+			-- and save the guild name into KnownGuilds. GetGuildInfo("player") is not
+			-- available yet at ADDON_LOADED, so we can't gate this on it.
+			GuildRoster()
+			if ( GS_Settings["AutoPrune"] == 1 ) then GearScore_Prune(); end
   			GearScore_GetScore(UnitName("player"), "player", 1); GearScore_Send(UnitName("player"), "ALL")
-       	  	if ( GetGuildInfo("player") ) and ( GS_Settings["Developer"] ~= 1 )then SendAddonMessage( "GSY_Version", GS_Settings["OldVer"], "GUILD"); end
 --       	  	if ( GetBuildInfo() == "4.0.3") then 
 --       	  		print("ERROR: This version of GearScore is incompatible with Cataclysm. Please update at www.GearScoreAddon.com"); 
 --       	  		GS_DisplayFrame = nil;
@@ -217,21 +247,145 @@ function GearScore_ComposeRecord(tbl, GS_Sender)
     ["Race"] = Race, ["Class"] =  Class, ["Spec"] = 1, ["Location"] = Location, ["Scanned"] = Scanned, ["Date"] = Date, ["Average"] = Average, ["Equip"] = Equip, ["StatString"] = StatString}
 end
 
-function GearScore_Prune()
-		--local time, monthago = GearScore_GetTimeStamp()
-  		for i, v in pairs(GS_Data[GetRealmName()].Players) do 
-			--if ( tonumber(v.Level) < GS_Settings["MinLevel"] ) then GS_Data[GetRealmName()].Players[i] = nil; end;
-  			if ( ( GS_Factions[v.Faction] ~= UnitFactionGroup("player") ) and ( GS_Settings["KeepFaction"] == -1 ) ) or ( ( tonumber(v.Level) < GS_Settings["MinLevel"] ) and ( v.Name ~= UnitName("player") ) ) then GS_Data[GetRealmName()].Players[v.Name] = nil; end
-			if not v.GearScore or not v.Name or not v.Sex or not v.Equip or not v.Location or not v.Level or not v.Faction or not v.Guild or not v.Race or not v.Class or not v.Date or not v.Average or not v.Scanned then GS_Data[GetRealmName()].Players[i] = nil; end
-			if ( string.find(v.Scanned, "<") ) then GS_Data[GetRealmName()].Players[v.Name] = nil; end
-            if v.Guild == "<>" or v.Guild == "" then GS_Data[GetRealmName()].Players[v.Name].Guild = "*"; end
-			if ( string.find(v.Guild, "<") ) then GS_Data[GetRealmName()].Players[v.Name].Guild = string.sub(v.Guild, 2, strlen(v.Guild) - 1); end
-  			if ( (type(tonumber(v.Guild))) == "number" ) then GS_Data[GetRealmName()].Players[v.Name] = nil; end
-  			--if v.Scanned == "LOLGearScore" then GS_Data[GetRealmName()].Players[v.Name] = nil; end
-  			--if ( GearScore_GetDate(v.Date) > 30 )
-			   --if ( GearScore_GetDate(v.Date) > 30 ) then print("Old Record Found     "..i); end
-			  --if v.Guild == "<>" then GS_Data[GetRealmName()].Players[v.Name].Guild = "*"; end
+-- Register the currently logged-in character into GS_Settings["KnownChars"]
+-- and the current guild into GS_Settings["KnownGuilds"] so neither is ever
+-- pruned, even when logged in on a different alt later.
+function GearScore_RegisterCurrentChar()
+	if not GS_Settings["KnownChars"]  then GS_Settings["KnownChars"]  = {} end
+	if not GS_Settings["KnownGuilds"] then GS_Settings["KnownGuilds"] = {} end
+	local name = UnitName("player")
+	if name then GS_Settings["KnownChars"][name] = true end
+	local guild = GetGuildInfo("player")
+	if guild and guild ~= "" then GS_Settings["KnownGuilds"][guild] = true end
+end
+
+-- Returns true if 'name' is one of the player's own known characters.
+function GearScore_IsKnownChar(name)
+	if not name then return false end
+	if not GS_Settings["KnownChars"] then return false end
+	return GS_Settings["KnownChars"][name] == true
+end
+
+-- Returns true if 'guildName' is one of the player's known guilds.
+function GearScore_IsKnownGuild(guildName)
+	if not guildName or guildName == "" or guildName == "*" then return false end
+	if not GS_Settings["KnownGuilds"] then return false end
+	return GS_Settings["KnownGuilds"][guildName] == true
+end
+
+-- Returns true if 'name' is currently in the player's guild.
+function GearScore_IsGuildMember(name)
+	if not name then return false end
+	if not GetGuildInfo("player") then return false end
+	for idx = 1, GetNumGuildMembers(true) do
+		if GetGuildRosterInfo(idx) == name then return true end
+	end
+	return false
+end
+
+-- Build a set of guild member names for fast lookup.
+-- Returns a table keyed by name -> true.
+function GearScore_GetGuildMemberSet()
+	local members = {}
+	if GetGuildInfo("player") then
+		GuildRoster()
+		for idx = 1, GetNumGuildMembers(true) do
+			local name = GetGuildRosterInfo(idx)
+			if name then members[name] = true end
 		end
+	end
+	return members
+end
+
+-- Returns true if 'name' is on the player's friends list.
+function GearScore_IsFriend(name)
+	if not name then return false end
+	for idx = 1, GetNumFriends() do
+		if GetFriendInfo(idx) == name then return true end
+	end
+	return false
+end
+
+-- Build a set of friend names for fast lookup.
+-- Returns a table keyed by name -> true.
+function GearScore_GetFriendSet()
+	local friends = {}
+	for idx = 1, GetNumFriends() do
+		local name = GetFriendInfo(idx)
+		if name then friends[name] = true end
+	end
+	return friends
+end
+
+function GearScore_Prune()
+	local playerFaction = UnitFactionGroup("player")
+	local protectSocial = ( GS_Settings["ProtectSocial"] == 1 )
+	local guildMembers  = protectSocial and GearScore_GetGuildMemberSet() or {}
+	local friendSet     = protectSocial and GearScore_GetFriendSet()     or {}
+
+	-- Collect keys to delete so we never modify the table mid-iteration.
+	local toDelete = {}
+	local totalBefore = 0
+
+	for i, v in pairs(GS_Data[GetRealmName()].Players) do
+		totalBefore = totalBefore + 1
+		-- Guard: preserve (don't touch) any record missing required fields
+		-- to avoid nil-indexing errors on the checks below.
+		if not v.GearScore or not v.Name or not v.Sex or not v.Equip
+		   or not v.Location or not v.Level or not v.Faction or not v.Guild
+		   or not v.Race or not v.Class or not v.Date or not v.Average
+		   or not v.Scanned then
+			toDelete[i] = true
+		else
+			-- Always protect: own characters (any alt) and known guilds.
+			-- Friends and live guildmates are only protected if ProtectSocial is on.
+			local isProtected = GearScore_IsKnownChar(v.Name)
+			                 or GearScore_IsKnownGuild(v.Guild)
+			                 or ( guildMembers[v.Name] )
+			                 or ( friendSet[v.Name] )
+
+			if not isProtected then
+				-- Remove wrong-faction records when KeepFaction is off.
+				if ( GS_Factions[v.Faction] ~= playerFaction ) and ( GS_Settings["KeepFaction"] == -1 ) then
+					toDelete[i] = true
+				end
+				-- Remove records below the minimum level threshold.
+				if ( tonumber(v.Level) < GS_Settings["MinLevel"] ) then
+					toDelete[i] = true
+				end
+				-- Remove records with a suspicious Scanned field.
+				if v.Scanned and string.find(v.Scanned, "<") then
+					toDelete[i] = true
+				end
+				-- Remove records where Guild looks like a numeric value (spoofed data).
+				if ( type(tonumber(v.Guild)) ) == "number" then
+					toDelete[i] = true
+				end
+			end
+
+			-- Clean up malformed guild name strings (safe even on protected records).
+			if not toDelete[i] then
+				if v.Guild == "<>" or v.Guild == "" then
+					GS_Data[GetRealmName()].Players[i].Guild = "*"
+				elseif string.find(v.Guild, "<") then
+					GS_Data[GetRealmName()].Players[i].Guild = string.sub(v.Guild, 2, strlen(v.Guild) - 1)
+				end
+			end
+		end
+	end
+
+	local deleted = 0
+	for i in pairs(toDelete) do
+		GS_Data[GetRealmName()].Players[i] = nil
+		deleted = deleted + 1
+	end
+
+	local remaining = totalBefore - deleted
+	if deleted > 0 then
+		print("|cff00ccffGearScore:|r Pruned " .. deleted .. " entr" .. (deleted == 1 and "y" or "ies") .. " from the database. " .. remaining .. " entr" .. (remaining == 1 and "y" or "ies") .. " remain.")
+	else
+		print("|cff00ccffGearScore:|r No entries removed. " .. remaining .. " entr" .. (remaining == 1 and "y" or "ies") .. " in database.")
+	end
 end
 
 
@@ -1041,6 +1195,7 @@ function GearScore_ShowOptions()
 	if ( GS_Settings["Level"] == 1 ) then GS_LevelCheck:SetChecked(true); else GS_LevelCheck:SetChecked(false); end
 	if ( GS_Settings["Date2"] == 1 ) then GS_DateCheck:SetChecked(true); else GS_DateCheck:SetChecked(false); end
 	if ( GS_Settings["AutoPrune"] == 1 ) then GS_PruneCheck:SetChecked(true); else GS_PruneCheck:SetChecked(false); end	
+	if ( GS_Settings["ProtectSocial"] == 1 ) then GS_ProtectSocialCheck:SetChecked(true); else GS_ProtectSocialCheck:SetChecked(false); end
 	if ( GS_Settings["ShowHelp"] == 1 ) then GS_HelpCheck:SetChecked(true); else GS_HelpCheck:SetChecked(false); end
 	if ( GS_Settings["KeepFaction"] == 1 ) then GS_FactionCheck:SetChecked(true); else GS_FactionCheck:SetChecked(false); end
 	if ( GS_Settings["ML"] == 1 ) then GS_MasterlootCheck:SetChecked(true); else GS_MasterlootCheck:SetChecked(false); end
@@ -1051,6 +1206,40 @@ function GearScore_ShowOptions()
 	GS_DatabaseAgeSliderText:SetText("Keep data for: "..(GS_Settings["DatabaseAgeSlider"] or 30).." days.")
 	GS_DatabaseAgeSlider:SetValue(GS_Settings["DatabaseAgeSlider"] or 30)
 	GS_LevelEditBox:SetText(GS_Settings["MinLevel"])
+
+	-- Refresh Forget Character dropdown
+	UIDropDownMenu_SetText(GS_ForgetCharDropdown, "Select character...")
+	UIDropDownMenu_Initialize(GS_ForgetCharDropdown, function(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		if GS_Settings["KnownChars"] then
+			for name, _ in pairs(GS_Settings["KnownChars"]) do
+				info.text    = name
+				info.value   = name
+				info.func    = function(btn)
+					UIDropDownMenu_SetSelectedValue(GS_ForgetCharDropdown, btn.value)
+				end
+				info.checked = false
+				UIDropDownMenu_AddButton(info)
+			end
+		end
+	end)
+
+	-- Refresh Forget Guild dropdown
+	UIDropDownMenu_SetText(GS_ForgetGuildDropdown, "Select guild...")
+	UIDropDownMenu_Initialize(GS_ForgetGuildDropdown, function(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		if GS_Settings["KnownGuilds"] then
+			for name, _ in pairs(GS_Settings["KnownGuilds"]) do
+				info.text    = name
+				info.value   = name
+				info.func    = function(btn)
+					UIDropDownMenu_SetSelectedValue(GS_ForgetGuildDropdown, btn.value)
+				end
+				info.checked = false
+				UIDropDownMenu_AddButton(info)
+			end
+		end
+	end)
 
 
 	
@@ -1070,6 +1259,7 @@ function GearScore_HideOptions()
 	if ( GS_ShowItemCheck:GetChecked() ) then GS_Settings["Item"] = 1; else GS_Settings["Item"] = -1; end
 	if ( GS_DateCheck:GetChecked() ) then GS_Settings["Date2"] = 1; else GS_Settings["Date2"] = -1; end
 	if ( GS_PruneCheck:GetChecked() ) then GS_Settings["AutoPrune"] = 1; else GS_Settings["AutoPrune"] = -1; end		
+	if ( GS_ProtectSocialCheck:GetChecked() ) then GS_Settings["ProtectSocial"] = 1; else GS_Settings["ProtectSocial"] = -1; end
 	if ( GS_FactionCheck:GetChecked() ) then GS_Settings["KeepFaction"] = 1; else GS_Settings["KeepFaction"] = -1; end
 	if ( GS_MasterlootCheck:GetChecked() ) then GS_Settings["ML"] = 1; else GS_Settings["ML"] = -1; end
 
@@ -1275,10 +1465,18 @@ function GearScore_HideDatabase(erase)
 	end
 
 	if ( Group == "All" ) then count = 0;
+		local _guildMembers = GearScore_GetGuildMemberSet()
+		local _friendSet    = GearScore_GetFriendSet()
+		local _ageToPrune   = {}
 		for i,v in pairs(GS_Data[GetRealmName()].Players) do
             if ( GS_Settings["AutoPrune"] == 1 ) then
-				if ( GearScore_GetDate(v.Date) > (GS_Settings["DatabaseAgeSlider"] or 30 ) ) then
-				    GS_Data[GetRealmName()].Players[i] = nil
+				local isProtected = GearScore_IsKnownChar(v.Name)
+				                 or GearScore_IsKnownGuild(v.Guild)
+				                 or ( _guildMembers[v.Name] )
+				                 or ( _friendSet[v.Name] )
+				local age = GearScore_GetDate(v.Date)
+				if (not isProtected) and ( age > (GS_Settings["DatabaseAgeSlider"] or 30 ) ) then
+				    _ageToPrune[i] = true
 				else
                     count = count+1; GSL_DataBase[count] = v;
 				end
@@ -1286,6 +1484,7 @@ function GearScore_HideDatabase(erase)
 			count = count+1; GSL_DataBase[count] = v;
 			end
 		end;
+		for i in pairs(_ageToPrune) do GS_Data[GetRealmName()].Players[i] = nil end
 		avg_GearScore = 0;
 		GSDatabaseAvgGearScore:SetText("Avg GearScore: n/a");
 	end
@@ -1606,6 +1805,8 @@ local f = CreateFrame("Frame", "GearScore", UIParent);
 f:SetScript("OnUpdate", GearScore_ThrottleUpdate)
 f:SetScript("OnEvent", GearScore_OnEvent);
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
+f:RegisterEvent("GUILD_ROSTER_UPDATE");
+f:RegisterEvent("PLAYER_GUILD_UPDATE");
 f:RegisterEvent("CHAT_MSG_ADDON");
 f:RegisterEvent("INSPECT_ACHIEVEMENT_READY")
 f:RegisterEvent("PLAYER_TARGET_CHANGED")

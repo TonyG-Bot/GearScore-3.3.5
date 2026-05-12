@@ -1380,6 +1380,144 @@
 
 
 	
+			<!-- Protect friends and guildies from prune checkbox -->
+			<CheckButton name="GS_ProtectSocialCheck" inherits="UICheckButtonTemplate" text="ProtectSocialCheck" checked="true">
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(GS_ProtectSocialCheck, "ANCHOR_Right")
+						GameTooltip:ClearLines()
+						GameTooltip:AddLine("Protect Friends &amp; Guildies", 1, 1, 1)
+						GameTooltip:AddLine("When enabled, players on your friends list")
+						GameTooltip:AddLine("and current guild members are never removed")
+						GameTooltip:AddLine("by the auto-prune.")
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+				<Size><AbsDimension x="20" y="20" /></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="61" y="-165" />
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- Forget Character dropdown -->
+			<Frame name="GS_ForgetCharDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="30" y="-218" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 130)
+						UIDropDownMenu_SetText(self, "Select character...")
+						UIDropDownMenu_Initialize(self, function(self2, level)
+							local info = UIDropDownMenu_CreateInfo()
+							if not GS_Settings or not GS_Settings["KnownChars"] then return end
+							for name, _ in pairs(GS_Settings["KnownChars"]) do
+								info.text    = name
+								info.value   = name
+								info.func    = function(btn)
+									UIDropDownMenu_SetSelectedValue(GS_ForgetCharDropdown, btn.value)
+								end
+								info.checked = false
+								UIDropDownMenu_AddButton(info)
+							end
+						end)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<!-- Forget Guild dropdown -->
+			<Frame name="GS_ForgetGuildDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="30" y="-278" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 130)
+						UIDropDownMenu_SetText(self, "Select guild...")
+						UIDropDownMenu_Initialize(self, function(self2, level)
+							local info = UIDropDownMenu_CreateInfo()
+							if not GS_Settings or not GS_Settings["KnownGuilds"] then return end
+							for name, _ in pairs(GS_Settings["KnownGuilds"]) do
+								info.text    = name
+								info.value   = name
+								info.func    = function(btn)
+									UIDropDownMenu_SetSelectedValue(GS_ForgetGuildDropdown, btn.value)
+								end
+								info.checked = false
+								UIDropDownMenu_AddButton(info)
+							end
+						end)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<!-- Forget Character confirm button -->
+			<Button name="GS_ForgetCharButton" inherits="UIPanelButtonTemplate" text="Forget">
+				<Size><AbsDimension x="50" y="20" /></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="198" y="-222" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local name = UIDropDownMenu_GetSelectedValue(GS_ForgetCharDropdown)
+						if name and GS_Settings["KnownChars"] then
+							GS_Settings["KnownChars"][name] = nil
+							UIDropDownMenu_SetText(GS_ForgetCharDropdown, "Select character...")
+							UIDropDownMenu_Initialize(GS_ForgetCharDropdown, function(self2, level)
+								local info = UIDropDownMenu_CreateInfo()
+								for n, _ in pairs(GS_Settings["KnownChars"]) do
+									info.text    = n
+									info.value   = n
+									info.func    = function(btn)
+										UIDropDownMenu_SetSelectedValue(GS_ForgetCharDropdown, btn.value)
+									end
+									info.checked = false
+									UIDropDownMenu_AddButton(info)
+								end
+							end)
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Forget Guild confirm button -->
+			<Button name="GS_ForgetGuildButton" inherits="UIPanelButtonTemplate" text="Forget">
+				<Size><AbsDimension x="50" y="20" /></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="198" y="-282" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local name = UIDropDownMenu_GetSelectedValue(GS_ForgetGuildDropdown)
+						if name and GS_Settings["KnownGuilds"] then
+							GS_Settings["KnownGuilds"][name] = nil
+							UIDropDownMenu_SetText(GS_ForgetGuildDropdown, "Select guild...")
+							UIDropDownMenu_Initialize(GS_ForgetGuildDropdown, function(self2, level)
+								local info = UIDropDownMenu_CreateInfo()
+								for n, _ in pairs(GS_Settings["KnownGuilds"]) do
+									info.text    = n
+									info.value   = n
+									info.func    = function(btn)
+										UIDropDownMenu_SetSelectedValue(GS_ForgetGuildDropdown, btn.value)
+									end
+									info.checked = false
+									UIDropDownMenu_AddButton(info)
+								end
+							end)
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			<CheckButton name="GS_MasterlootCheck" inherits="UICheckButtonTemplate" text="CheckButton11">
 				<Scripts>
 					<OnEnter>
@@ -1533,6 +1671,10 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="GS_ProtectSocialText" inherits="GameFontNormal" text="Protect Friends &amp; Guildies" justifyH="LEFT">
+					<Size><AbsDimension x="200" y="20" /></Size>
+					<Anchors><Anchor point="TOPLEFT"><Offset x="93" y="-165" /></Anchor></Anchors>
+				</FontString>
 				<FontString name="GS_FontString12" inherits="GameFontNormal" text="Auto Prune Database" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="179" y="20" />
@@ -1593,6 +1735,14 @@
 							<Offset x="366" y="-369" />
 						</Anchor>
 					</Anchors>
+				</FontString>
+				<FontString name="GS_ForgetCharLabel" inherits="GameFontNormal" text="Forget Character" justifyH="LEFT">
+					<Size><AbsDimension x="150" y="20" /></Size>
+					<Anchors><Anchor point="TOPLEFT"><Offset x="93" y="-205" /></Anchor></Anchors>
+				</FontString>
+				<FontString name="GS_ForgetGuildLabel" inherits="GameFontNormal" text="Forget Guild" justifyH="LEFT">
+					<Size><AbsDimension x="150" y="20" /></Size>
+					<Anchors><Anchor point="TOPLEFT"><Offset x="93" y="-265" /></Anchor></Anchors>
 				</FontString>
 							
 																																																										
