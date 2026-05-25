@@ -367,6 +367,18 @@ GS_ClassInfo = {
 	}
 }
 
+-- Translate the GS_ClassInfo keys into the local language.
+GS_ClassInfo[L["Warrior"]] = GS_ClassInfo["Warrior"]
+GS_ClassInfo[L["Death Knight"]] = GS_ClassInfo["Death Knight"]
+GS_ClassInfo[L["Paladin"]] = GS_ClassInfo["Paladin"]
+GS_ClassInfo[L["Druid"]] = GS_ClassInfo["Druid"]
+GS_ClassInfo[L["Hunter"]] = GS_ClassInfo["Hunter"]
+GS_ClassInfo[L["Mage"]] = GS_ClassInfo["Mage"]
+GS_ClassInfo[L["Priest"]] = GS_ClassInfo["Priest"]
+GS_ClassInfo[L["Rogue"]] = GS_ClassInfo["Rogue"]
+GS_ClassInfo[L["Shaman"]] = GS_ClassInfo["Shaman"]
+GS_ClassInfo[L["Warlock"]] = GS_ClassInfo["Warlock"]
+
 GS_ItemTypes = {
 	["INVTYPE_RELIC"] = { ["SlotMOD"] = 0.3164, ["ItemSlot"] = 18, ["Enchantable"] = false},
 	["INVTYPE_TRINKET"] = { ["SlotMOD"] = 0.5625, ["ItemSlot"] = 33, ["Enchantable"] = false },
