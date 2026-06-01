@@ -761,8 +761,8 @@ GS_AchInfo = {
 		[1753] = "Archavon the Stone Watcher (|CFF00F000Wintergrasp|r)",
 		[2870] = "Emalon the Storm Watcher (|CFF00F000Wintergrasp|r)",
 		[4074] = "Koralon the Flame Watcher (|CFF00F000Wintergrasp|r)",
-		[4657] = "Toravon the Ice Watcher (|CFF00F000Wintergrasp|r",
-		[4821] = "Halion (|CFF00F000Ruby Sanctum|r",
+		[4657] = "Toravon the Ice Watcher (|CFF00F000Wintergrasp|r)",
+		[4821] = "Halion (|CFF00F000Ruby Sanctum|r)",
 	},
 	["Miscellaneous (25)"] = {
     	[1393] = "Sartharion (|CFF00F000Chamber of the Aspects|r)",
@@ -770,8 +770,8 @@ GS_AchInfo = {
 		[1754] = "Archavon the Stone Watcher (|CFF00F000Wintergrasp|r)",
 		[3236] = "Emalon the Storm Watcher (|CFF00F000Wintergrasp|r)",
 		[4075] = "Koralon the Flame Watcher (|CFF00F000Wintergrasp|r)",
-		[4658] = "Toravon the Ice Watcher (|CFF00F000Wintergrasp|r",
-		[4820] = "Halion (|CFF00F000Ruby Sanctum|r",
+		[4658] = "Toravon the Ice Watcher (|CFF00F000Wintergrasp|r)",
+		[4820] = "Halion (|CFF00F000Ruby Sanctum|r)",
 	},
 	["Naxxramas (10)"] = {
 		[1361] = "Anub'Rekhan",
