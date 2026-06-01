@@ -86,7 +86,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString> 
-				<FontString name="$parentInstanceText" inherits="GameFontNormal" text="" justifyH="Left">
+				<FontString name="$parentInstaceText" inherits="GameFontNormal" text="" justifyH="Left">
 					<Size>
 						<AbsDimension x="299" y="20" />
 					</Size>
