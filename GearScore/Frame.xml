@@ -86,7 +86,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString> 
-				<FontString name="$parentInstaceText" inherits="GameFontNormal" text="" justifyH="Left">
+				<FontString name="$parentInstanceText" inherits="GameFontNormal" text="" justifyH="Left">
 					<Size>
 						<AbsDimension x="299" y="20" />
 					</Size>
@@ -891,7 +891,7 @@
 						--if GS_DatabaseFrame.tooltip then GS_DatabaseFrame.tooltip:Show(); else GS_DisplayFrame:Hide(); 						--GearScore_DisplayUnit(GS_DisplayPlayer, 1); end
 						--GS_GearFrame:Show(); GS_NotesFrame:Hide(); GS_DefaultFrame:Show(); GS_ExPFrame:Hide()
 						--if ( GS_OptionsFrame:IsVisible() ) then GearScore_HideOptions(); end		
-						--GS_GearScoreText:Show(); GS_LocationText:Show(); GS_DateText:Show(); GS_AverageText: Show();
+						--GS_GearScoreText:Show(); GS_LocationText:Show(); GS_DateText:Show(); GS_AverageText:Show();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -911,7 +911,7 @@
 						GS_GearFrame:Hide(); GS_ExPFrame:Show();  GS_DefaultFrame:Show()
 						GS_DisplayXP(Name); GearScoreClassScan(Name)
 						if ( GS_OptionsFrame:IsVisible() ) then GearScore_HideOptions(); end
-						GS_GearScoreText:Hide(); GS_LocationText:Hide(); GS_DateText:Hide(); GS_AverageText: Hide();
+						GS_GearScoreText:Hide(); GS_LocationText:Hide(); GS_DateText:Hide(); GS_AverageText:Hide();
 					</OnClick>
 				</Scripts>
 
