@@ -194,7 +194,7 @@ GS_ClassInfo = {
 	},
 	["Death Knight"] = {
 		["Name"] = "Death Knight",
-		["Key"] = "WA",
+		["Key"] = "DK",
 		["Red"] = 0.77,
 		["Green"] = 0.12,
 		["Blue"] = 0.23,
