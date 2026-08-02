@@ -102,7 +102,7 @@ GS_Races = {
 	["Tauren"] = "TA",
 	["Troll"] = "TR",
 	["BloodElf"] = "BE",
-	["Scourge"] = "UN",
+	["Undead"] = "UN",
 }
 
 GS_Sexes = { [1] = "Neutral", [2] = "Male", [3] = "Female" }
@@ -338,7 +338,7 @@ GS_ClassInfo = {
 			["Totems"] = 1,
 			["Shields"] = 1,
 			["Fist Weapons"] = 1,
-			["One-Handed Axes"] = 1,
+			-- ["One-Handed Axes"] = 1,
 			["Daggers"] = 1,
 			["Miscellaneous"] = 1,
 			["One-Handed Axes"] = 1,
@@ -548,11 +548,11 @@ GS_CommandList = {
 	[9] = "/gset ml --> Toggles display of GearScore Masterloot comparison tooltip.",
 	--[10] = "/gset compare --> Toggles display of comparative info between you and your target's GearScore.",
 	--[15] = "/gset prune --> Removes old and low level GearScores from your database.",
-	[11] = "/gset purge --> Removes all entries from your database. Use with caution!",
-	[12] = "/gset date --> Adds date & Time info to the tooltip",
-	[13] = "/gset chat --> Adds GearScore information to Chat Frames.",
-	[14] = "/gset transmit <name> --> Transmits your GearScore database to player <name>.",
-	[15] = "/gsban <name> --> Toggles rather or not <name> is allowed to send you GearScore Data.",
+	[10] = "/gset purge --> Removes all entries from your database. Use with caution!",
+	[11] = "/gset date --> Adds date & Time info to the tooltip",
+	[12] = "/gset chat --> Adds GearScore information to Chat Frames.",
+	[13] = "/gset transmit <name> --> Transmits your GearScore database to player <name>.",
+	[14] = "/gsban <name> --> Toggles rather or not <name> is allowed to send you GearScore Data.",
   	[15] = "/gspam <group> -> Reports scores of players in your group. <group> can be 'party', 'raid', or 'group'",
 	[16] = "/gspam <group> <targetchat> -> Whispers scores of players in your <group> to <targetchat> Eample: /gspam party guild",
 }
@@ -663,7 +663,7 @@ GS_Zones = {
 	["SPF"] = "Silverpine Forest",
 	["WSF"] = "Westfall",
 	["RRM"] = "Redridge Mountains",
-	["SKW"] = "Duskwood",
+	["DKW"] = "Duskwood",
 	["HBF"] = "Hillsbrad Foothills",
 	["WTL"] = "Wetlands",
 	["ATM"] = "Alterac Mountains",
