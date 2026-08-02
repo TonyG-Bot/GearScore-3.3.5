@@ -102,7 +102,7 @@ GS_Races = {
 	["Tauren"] = "TA",
 	["Troll"] = "TR",
 	["BloodElf"] = "BE",
-	["Undead"] = "UN",
+	["Scourge"] = "UN",
 }
 
 GS_Sexes = { [1] = "Neutral", [2] = "Male", [3] = "Female" }
