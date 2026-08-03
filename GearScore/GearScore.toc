@@ -25,3 +25,4 @@ GearScore.lua
 recount.lua
 Broker.lua
 weights.lua
+GearScore_AutoScan.lua
